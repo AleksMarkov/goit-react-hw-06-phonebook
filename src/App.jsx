@@ -25,24 +25,49 @@ const App = () => {
     firstRender.current = false;
   }, []);
 
-  const isDublicate = ({ name }) => {
-    const normolizedName = name.toLowerCase();
-    const dublicate = contacts.find(item => {
-      const normalizedCurrentName = item.name.toLowerCase();
-      return normalizedCurrentName === normolizedName;
-    });
-    return Boolean(dublicate);
-  };
+  // const isDublicate = ({ name }) => {
+  //   const normolizedName = name.toLowerCase();
+  //   const dublicate = contacts.find(item => {
+  //     const normalizedCurrentName = item.name.toLowerCase();
+  //     return normalizedCurrentName === normolizedName;
+  //   });
+  //   return Boolean(dublicate);
+  // };
 
-  const addContact = useCallback(data => {
-    if (isDublicate(data)) {
-      return alert(` ${data.name} is already in contacts`);
-    }
-    setContacts(prevContacts => {
-      const newContact = { id: nanoid(), ...data };
-      return [...prevContacts, newContact];
-    });
-  }, []);
+  // const addContact = useCallback(
+  //   data => {
+  //     if (isDublicate(data)) {
+  //       return alert(` ${data.name} is already in contacts`);
+  //     }
+  //     setContacts(prevContacts => {
+  //       const newContact = { id: nanoid(), ...data };
+  //       return [...prevContacts, newContact];
+  //     });
+  //   },
+  //   [isDublicate]
+  // );
+
+  const addContact = useCallback(
+    data => {
+      const isDublicate = ({ name }) => {
+        const normolizedName = name.toLowerCase();
+        const dublicate = contacts.find(item => {
+          const normalizedCurrentName = item.name.toLowerCase();
+          return normalizedCurrentName === normolizedName;
+        });
+        return Boolean(dublicate);
+      };
+
+      if (isDublicate(data)) {
+        return alert(` ${data.name} is already in contacts`);
+      }
+      setContacts(prevContacts => {
+        const newContact = { id: nanoid(), ...data };
+        return [...prevContacts, newContact];
+      });
+    },
+    [contacts]
+  );
 
   const deleteContact = useCallback(id => {
     setContacts(prevContacts => prevContacts.filter(item => item.id !== id));
