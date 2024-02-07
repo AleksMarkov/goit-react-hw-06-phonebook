@@ -3,14 +3,14 @@ import ContactForm from './components/ContactForm/ContactForm';
 import ContactList from './components/ContactList/ContactList';
 import Filter from 'components/Filter/Filter';
 
-import { addContact, deleteContact, setFilter } from './redux/actions';
-import { getFilteredContacts } from './redux/selectors';
+import { addContact, deleteContact } from './redux/contacts/contacts-actions';
+import { setFilter } from './redux/filter/filter-actions';
+import { getFilteredContacts } from './redux/contacts/contacts-selector';
 
 import styles from './app.module.css';
 
 const App = () => {
   const contacts = useSelector(getFilteredContacts);
-  // const filter = useSelector(getFilter);
   const dispatch = useDispatch();
 
   const isDublicate = ({ name }) => {
@@ -33,38 +33,6 @@ const App = () => {
   const onDeleteContact = id => {
     dispatch(deleteContact(id));
   };
-
-  // const getFilteredContacts = () => {
-  //   if (!filter) {
-  //     return contacts;
-  //   }
-  //   const normalizedFilter = filter.toLowerCase();
-  //   const filteredContacts = contacts.filter(contacts => {
-  //     const normolizedName = contacts.name.toLowerCase();
-  //     return normolizedName.includes(normalizedFilter);
-  //   });
-  //   return filteredContacts;
-  // };
-
-  // const items = getFilteredContacts();
-
-  /* const changeFilter = useCallback(({ target }) => {
-    setFilter(target.value);
-  }, []);
-
-  const getFilteredContacts = () => {
-    if (!filter) {
-      return contacts;
-    }
-    const normalizedFilter = filter.toLowerCase();
-    const filteredContacts = contacts.filter(contacts => {
-      const normolizedName = contacts.name.toLowerCase();
-      return normolizedName.includes(normalizedFilter);
-    });
-    return filteredContacts;
-  };
-
-  const items = getFilteredContacts(); */
 
   const changeFilter = ({ target }) => dispatch(setFilter(target.value));
 
