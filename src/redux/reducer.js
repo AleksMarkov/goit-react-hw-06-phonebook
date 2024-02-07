@@ -1,4 +1,4 @@
-import { ADD_CONTACT, DELETE_CONTACT } from './constants';
+import { ADD_CONTACT, DELETE_CONTACT, SET_FILTER } from './constants';
 
 const initialState = {
   contacts: [],
@@ -9,10 +9,12 @@ const reducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case ADD_CONTACT:
       const { contacts } = state;
-      return { contacts: [...contacts, payload] };
+      return { ...state, contacts: [...contacts, payload] };
     case DELETE_CONTACT:
       const newContacts = state.contacts.filter(item => item.id !== payload);
-      return { contacts: newContacts };
+      return { ...state, contacts: newContacts };
+    case SET_FILTER:
+      return { ...state, filter: payload };
     default:
       return state;
   }
