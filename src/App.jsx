@@ -1,79 +1,41 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { nanoid } from 'nanoid';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ContactForm from './components/ContactForm/ContactForm';
 import ContactList from './components/ContactList/ContactList';
 import Filter from 'components/Filter/Filter';
 
+import { addContact, deleteContact } from './redux/actions';
+
 import styles from './app.module.css';
 
 const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const data = JSON.parse(localStorage.getItem('my-contacts'));
-    return data || [];
-  });
+  const contacts = useSelector(store => store.contacts);
+  const dispatch = useDispatch();
+
   const [filter, setFilter] = useState('');
 
-  const firstRender = useRef(true);
+  const isDublicate = ({ name }) => {
+    const normolizedName = name.toLowerCase();
+    const dublicate = contacts.find(item => {
+      const normalizedCurrentName = item.name.toLowerCase();
+      return normalizedCurrentName === normolizedName;
+    });
+    return Boolean(dublicate);
+  };
 
-  useEffect(() => {
-    if (!firstRender.current) {
-      localStorage.setItem('my-contacts', JSON.stringify(contacts));
+  const onAddContact = data => {
+    if (isDublicate(data)) {
+      return alert(` ${data.name} is already in contacts`);
     }
-  }, [contacts]);
+    const action = addContact(data);
+    dispatch(action);
+  };
 
-  useEffect(() => {
-    firstRender.current = false;
-  }, []);
+  const onDeleteContact = id => {
+    dispatch(deleteContact(id));
+  };
 
-  // const isDublicate = ({ name }) => {
-  //   const normolizedName = name.toLowerCase();
-  //   const dublicate = contacts.find(item => {
-  //     const normalizedCurrentName = item.name.toLowerCase();
-  //     return normalizedCurrentName === normolizedName;
-  //   });
-  //   return Boolean(dublicate);
-  // };
-
-  // const addContact = useCallback(
-  //   data => {
-  //     if (isDublicate(data)) {
-  //       return alert(` ${data.name} is already in contacts`);
-  //     }
-  //     setContacts(prevContacts => {
-  //       const newContact = { id: nanoid(), ...data };
-  //       return [...prevContacts, newContact];
-  //     });
-  //   },
-  //   [isDublicate]
-  // );
-
-  const addContact = useCallback(
-    data => {
-      const isDublicate = ({ name }) => {
-        const normolizedName = name.toLowerCase();
-        const dublicate = contacts.find(item => {
-          const normalizedCurrentName = item.name.toLowerCase();
-          return normalizedCurrentName === normolizedName;
-        });
-        return Boolean(dublicate);
-      };
-
-      if (isDublicate(data)) {
-        return alert(` ${data.name} is already in contacts`);
-      }
-      setContacts(prevContacts => {
-        const newContact = { id: nanoid(), ...data };
-        return [...prevContacts, newContact];
-      });
-    },
-    [contacts]
-  );
-
-  const deleteContact = useCallback(id => {
-    setContacts(prevContacts => prevContacts.filter(item => item.id !== id));
-  }, []);
-
-  const changeFilter = useCallback(({ target }) => {
+  /* const changeFilter = useCallback(({ target }) => {
     setFilter(target.value);
   }, []);
 
@@ -89,14 +51,15 @@ const App = () => {
     return filteredContacts;
   };
 
-  const items = getFilteredContacts();
+  const items = getFilteredContacts(); */
+
   return (
     <div className={styles.wrapper}>
       <h1>Phonebook</h1>
-      <ContactForm onSubmit={addContact} />
+      <ContactForm onSubmit={onAddContact} />
       <h2>Contacts</h2>
-      <Filter changeFilter={changeFilter} />
-      <ContactList items={items} deleteContact={deleteContact} />
+      <Filter changeFilter={() => {}} />
+      <ContactList items={contacts} deleteContact={onDeleteContact} />
     </div>
   );
 };
